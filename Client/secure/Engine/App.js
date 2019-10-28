@@ -1,7 +1,7 @@
 /*
  * App.js
  *
- * Copyright (C) 2019 Elisabeth Gueux, Salome Mialon, Quentin Piet, Axel Polin
+ * Copyright (C) 2019 Axel Polin
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  *
- * Please visit : https://github.com/axel-polin/Papyrus_UI
+ * Please visit : https://github.com/lynerlok/RamchandranServer
  *
  */
 
@@ -26,4 +26,4 @@
  * More informations at : https://docs.angularjs.org/guide/module
  */
 
-var papyrus = angular.module('PapyrusApp', []); // The module for this project : PapyrusApp.
+var protVisu = angular.module('ProtApp', []); // The module for this project : ProtApp.

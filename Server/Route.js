@@ -38,7 +38,6 @@ var crypto = require('crypto');
 var argon2i = require('argon2-ffi').argon2i;
 var crypto = require('crypto');
 var del = require('del');
-var PapyrusMainFile = require('./PapyrusTable.js');
 var {PythonShell} = require('python-shell');
 
 //var helmet = require('helmet');
@@ -47,6 +46,8 @@ var router = express.Router(); // Use Router to set route for the server;
 
 var exec = require('child_process').exec;
 function puts(error, stdout, stderr) { console.log("[INFO] Execute convert on image : Out: " + stdout + '\n' + "Error: " + stderr) }
+
+//var parser = require('Scripts/parse.js');
 
 // End dependancies;
 
@@ -84,7 +85,7 @@ var removeProjectPath = '/secure/rd';
 
 //    Script path to run script on the server (not system path);
 
-var RAM_Path = '/secure/ram';
+var pdbPath = '/secure/pdb';
 
 // Read the user/password file and the projects file;
 
@@ -124,7 +125,6 @@ module.exports = (function() { // Module creation for the main file of the serve
 		res.setHeader('X-Frame-Options', 'deny');
 		res.setHeader('X-Permitted-Cross-Domain-Policies', 'none');
 		res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubdomains');
-
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
 		res.setHeader('Pragma', 'no-cache');
 		res.setHeader('Expires', 0);
@@ -233,7 +233,7 @@ module.exports = (function() { // Module creation for the main file of the serve
 
 	});
 
-  router.post(RAM_Path,function(req,res){ // Route : when POST treshold (body contains img ref) make some action and send 200 OK;
+  router.post(pdbPath,function(req,res){ // Route : when POST treshold (body contains img ref) make some action and send 200 OK;
     if(req.session.isAuthenticated === "Success"){ // If the user is login;
 
       var img = req.body.img; // The body contain the image path.
@@ -242,22 +242,28 @@ module.exports = (function() { // Module creation for the main file of the serve
       var csrf = req.body.csrf;
       if (csrf !== req.session.csrfToken) return res.sendStatus(400);
       
-/* // COMPLETER ICI !!!
+      var pdb_code = req.body.code;
+      var client = req.session.user;
+      
+      
+    //  console.log(parser.parsePDB(pdb_code));
+      
+      
+      
       // Set options for python-shell
       var options = {
         mode: 'text',
         pythonPath: pythonPathNode,
         pythonOptions: ['-u'],
-      //  args: [`-i ${imgToScript}`, `-o ${datasPath}`] // Make input and output
+        args: [`${pdb_code}`, `${client}`] // Make input and output
       };
 
       PythonShell.run(RAM_ScriptPath, options, function (err, results) { // Run the script;
         if (err) throw 'An error occurs on treshold execution :' + err;
 
-
         res.sendStatus(200);
-      });
-*/
+       });
+      
     }
     else {
         console.log('WARNING [TRESHOLD] : Access Denied ('+req.session.user+')');

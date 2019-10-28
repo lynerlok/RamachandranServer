@@ -38,6 +38,11 @@ body, html {height:100vh;}
  margin-left:25vw;
 }
 
+.formFieldPDB {
+ width:50%;
+ margin-left:25vw;
+}
+
 .changeTabStyle {
  background: linear-gradient(#515151, black);
 }

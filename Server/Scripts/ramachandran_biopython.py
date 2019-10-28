@@ -6,10 +6,11 @@
 #
 # http://www.biopython.org
 #
-# It assumes the input file 1HMP.pdb is in the current directory,
-# and generates an output file 1HMP_biopython.tsv in the current directory.
 
 import math
+import sys
+import Bio.PDB
+
 def degrees(rad_angle) :
     """Converts any angle in radians to degrees.
 
@@ -45,14 +46,11 @@ def ramachandran_type(residue, next_residue) :
     else :
         return "General"    
 
-pdb_code = "1HMP"
+pdb_code = sys.argv[1]
+client = sys.argv[2]
 
-print "About to load Bio.PDB and the PDB file..."
-import Bio.PDB
 structure = Bio.PDB.PDBParser().get_structure(pdb_code, "%s.pdb" % pdb_code)
-print "Done"
 
-print "About to save angles to file..."
 output_file = open("%s_biopython.tsv" % pdb_code,"w")
 for model in structure :
     for chain in model :
