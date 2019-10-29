@@ -41,9 +41,6 @@ var bodyParser = require('body-parser');
 var uuid = require('uuid/v4');
 var crypto = require('crypto');
 
-var jsonFile = fs.readFileSync(__dirname + '/passwd.json', 'utf8');
-var creds = JSON.parse(jsonFile);
-
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var FileStore = require('session-file-store')(session);
@@ -57,7 +54,7 @@ var secret = crypto.randomBytes(32);
 console.log("Running Server...");
 console.log("Removing old sessions if exist...");
 
-del.sync([__dirname + '/sessions/**','!'+__dirname + '/sessions']);
+del.sync([__dirname + '/sessions/**','!'+ __dirname + '/sessions']);
 
 console.log("Setting options...");
 

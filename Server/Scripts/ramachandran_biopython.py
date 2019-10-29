@@ -10,6 +10,7 @@
 import math
 import sys
 import Bio.PDB
+import requests
 
 def degrees(rad_angle) :
     """Converts any angle in radians to degrees.
@@ -47,14 +48,17 @@ def ramachandran_type(residue, next_residue) :
         return "General"    
 
 pdb_code = sys.argv[1]
-client = sys.argv[2]
 
-structure = Bio.PDB.PDBParser().get_structure(pdb_code, "%s.pdb" % pdb_code)
+Bio.PDB.PDBList().retrieve_pdb_file(pdb_code, obsolete=False, pdir="../PDB_Datas/ENT/", file_format="pdb", overwrite=False)
 
-output_file = open("%s_biopython.tsv" % pdb_code,"w")
+filename = 'pdb'+pdb_code+'.ent'
+
+structure = Bio.PDB.PDBParser().get_structure(pdb_code, "../PDB_Datas/ENT/%s" % filename)
+
+output_file = open("../PDB_Datas/TSV/%s.tsv" % pdb_code,"w")
 for model in structure :
     for chain in model :
-        print "Chain %s" % str(chain.id)
+        print("Chain %s" % str(chain.id))
         polypeptides = Bio.PDB.CaPPBuilder().build_peptides(chain)
         for poly_index, poly in enumerate(polypeptides) :
             phi_psi = poly.get_phi_psi_list()
@@ -67,4 +71,4 @@ for model in structure :
                            residue.id[1], degrees(phi), degrees(psi),
                            ramachandran_type(residue, poly[res_index+1])))
 output_file.close()
-print "Done"
+print("Done")
