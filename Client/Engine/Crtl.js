@@ -36,7 +36,7 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
  * @return
  * This function allow to create a new working directory on the server with the CSRF protection;
  */
-
+    
     var dataToSend = JSON.stringify({ "code" : pdb.code});
     // ^- Create a JSON string with concatenation of img txt and the Area.images array (see Area);
 
@@ -48,42 +48,25 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
       contentType: 'application/json; charset=utf-8' // Content-Type for the server and the communication;
     }).then(function(response) {
       
-        $http({
-          method : "GET",
-          url : "PDB_Datas/"+$pdb_code+".json"
-          }).then(function(response) {
-            var jsonFile = JSON.parse(response.data);
-            console.log(jsonFile);
-            }, function(response) {
-              alert(response.statusText);
-              });
-              
-      alert("PDB id send to server !");
-      window.location.reload();
+        $http({ // Post all datas to server;
+          method : "POST", // Method accepted by the server is POST;
+          url : "/RamJSON", // The URL where the server accept this type of POST;
+          data : dataToSend, // Put the data to send here;
+          dataType: 'json', // The type of data is JSON;
+          contentType: 'application/json; charset=utf-8' // Content-Type for the server and the communication;
+        }).then(function(response) {
+          console.log(response.data);
+         // alert("Image removed from server"); // If the image sucessfuly uploaded alert user;
+        }, function(response) {
+          alert("Error while getting json file!!"); // If the upload fail alert user;
+        });
+        
     }, function(response) {
       alert("Error while sending pdb id to server !!"); // If the upload fail alert user;
     });
 
   };
 
-}]);
-
-protVisu.controller('manageTSV', ['$scope','$rootScope','$http', function($scope,$rootScope,$http){
-/*
- * name: RepeatPapyrus;
- * type: AngularJS controller;
- * @param : $scope, $rootScope; Visit : https://docs.angularjs.org/guide/scope;
- * @return : nothing;
- */
- 
-  var jsonFile;
-
-	$rootScope.getJsonRam = function(pdb_code) {
-	 
-  
-    
-	};
-  
 }]);
 
 

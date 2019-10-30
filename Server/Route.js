@@ -52,13 +52,13 @@ var router = express.Router(); // Use Router to set route for the server;
 
 var pythonPathNode = __dirname + '/Scripts/venv/ramachandran/bin/python3.5';
 var RAM_ScriptPath = __dirname + '/Scripts/ramachandran_biopython.py';
-
+var JSONPath = __dirname + '/../Client/PDB_Datas/';
 // Server path;
 //    Main path;
 
 var mainPath = '/';
 var indexPath = '/index.html';
-
+var ramJsonPath = '/RamJSON';
 //    Script path to run script on the server (not system path);
 
 var pdbPath = '/pdb';
@@ -120,10 +120,6 @@ module.exports = (function() { // Module creation for the main file of the serve
      res.redirect(indexPath);
   });
 
-  router.get('/csrf',function(res,res){ // A simple route to get the header for the CSRF protection;
-    return res.sendStatus(200); // Simply return 200 Ok (and a header);
-  });
-
   router.post(pdbPath,function(req,res){ // Route : when POST treshold (body contains img ref) make some action and send 200 OK;
 
       var pdb_code = req.body.code;
@@ -137,11 +133,21 @@ module.exports = (function() { // Module creation for the main file of the serve
       };
 
       PythonShell.run(RAM_ScriptPath, options, function (err, results) { // Run the script;
-        if (err) throw 'An error occurs on treshold execution :' + err;
+        if (err) throw 'An error occurs when execute BioPython :' + err;
 
         res.sendStatus(200);
        });
        
+	});
+  
+  router.post(ramJsonPath,function(req,res){ // Route : when POST treshold (body contains img ref) make some action and send 200 OK;
+
+      var pdb_code = req.body.code;
+      
+      var jsonFile = fs.readFileSync(JSONPath+pdb_code+".json", 'utf8');
+      var data = JSON.parse(jsonFile);
+      
+      res.send(data);
 	}); 
   
   return router;
