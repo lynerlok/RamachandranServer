@@ -98,7 +98,7 @@ module.exports = (function() { // Module creation for the main file of the serve
 		res.setHeader('Expires', 0);
 		res.setHeader('Surrogate-Control', 'no-store');
    // res.setHeader('Feature-Policy', "camera: 'none'; payment: 'none'; microphone: 'none'");// Bad compatibility
-		res.setHeader('Content-Security-Policy', "default-src 'self' data:; font-src 'self' use.fontawesome.com ; style-src 'self' use.fontawesome.com www.w3schools.com 'unsafe-inline'; script-src 'self' code.angularjs.org ajax.googleapis.com d3js.org 'unsafe-inline'");
+		res.setHeader('Content-Security-Policy', "default-src 'self' data:; font-src 'self' use.fontawesome.com ; style-src 'self' use.fontawesome.com www.w3schools.com 'unsafe-inline'; script-src 'self' code.angularjs.org ajax.googleapis.com cdn.plot.ly 'unsafe-inline'");
 
     res.setHeader('Public-Key-Pins', 'pin-sha256="qvFAlNcPepF8XPAe+Hj/1sOMoIzPKqAlhl3hsFEH7tg="; \
 								pin-sha256="LM/+L4/KK/O1MlrufMk7UXkgrsF9U/4IBwHR7VIIfLc="; \

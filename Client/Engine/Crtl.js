@@ -47,6 +47,17 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
       dataType: 'json', // The type of data is JSON;
       contentType: 'application/json; charset=utf-8' // Content-Type for the server and the communication;
     }).then(function(response) {
+      
+        $http({
+          method : "GET",
+          url : "PDB_Datas/"+$pdb_code+".json"
+          }).then(function(response) {
+            var jsonFile = JSON.parse(response.data);
+            console.log(jsonFile);
+            }, function(response) {
+              alert(response.statusText);
+              });
+              
       alert("PDB id send to server !");
       window.location.reload();
     }, function(response) {
@@ -57,7 +68,23 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
 
 }]);
 
+protVisu.controller('manageTSV', ['$scope','$rootScope','$http', function($scope,$rootScope,$http){
+/*
+ * name: RepeatPapyrus;
+ * type: AngularJS controller;
+ * @param : $scope, $rootScope; Visit : https://docs.angularjs.org/guide/scope;
+ * @return : nothing;
+ */
+ 
+  var jsonFile;
 
+	$rootScope.getJsonRam = function(pdb_code) {
+	 
+  
+    
+	};
+  
+}]);
 
 
 

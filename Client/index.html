@@ -12,7 +12,7 @@
       <link rel="stylesheet" type="text/css" href="Css/Sidebar.css">
       <link rel="stylesheet" type="text/css" href="Css/Form.css">
       <link rel="stylesheet" type="text/css" href="Css/Match.css">
-      <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+      <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
       <script type="text/javascript" src="https://code.angularjs.org/1.7.7/angular.min.js"></script>
       <script type="text/javascript" src="https://code.angularjs.org/1.7.7/angular-animate.min.js"></script>
       <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -22,7 +22,7 @@
 
    <body ng-app="ProtApp" class="w3-black">
 
-      <!-- Calculate ramchandran -->
+      <!-- Calculate ramachandran -->
       <div id="pdb" ng-controller="pdbForm" class="tab w3-center w3-padding-64">
         <form novalidate class="simple-form" autocomplete="off">
           <input name="code" id="code" class="formFieldPDB w3-input" type="text" placeholder="PDB code" type="text" ng-model="pdb.code" required />
@@ -32,9 +32,9 @@
           
         </form>
       </div>
-      <!-- Calculate ramchandran -->
+      <!-- END Calculate ramachandran -->
       
-      <section id="display"/>
+      <div id="display" style="width:600px;height:250px;"></div>
 
    </body>
 </html>

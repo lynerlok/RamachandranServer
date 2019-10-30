@@ -11,6 +11,8 @@ import math
 import sys
 import Bio.PDB
 import requests
+import csv
+import json
 
 def degrees(rad_angle) :
     """Converts any angle in radians to degrees.
@@ -49,13 +51,13 @@ def ramachandran_type(residue, next_residue) :
 
 pdb_code = sys.argv[1]
 
-Bio.PDB.PDBList().retrieve_pdb_file(pdb_code, obsolete=False, pdir="../PDB_Datas/ENT/", file_format="pdb", overwrite=False)
+Bio.PDB.PDBList().retrieve_pdb_file(pdb_code, obsolete=False, pdir="../Client/PDB_Datas/ENT/", file_format="pdb", overwrite=False)
 
 filename = 'pdb'+pdb_code+'.ent'
 
-structure = Bio.PDB.PDBParser().get_structure(pdb_code, "../PDB_Datas/ENT/%s" % filename)
+structure = Bio.PDB.PDBParser().get_structure(pdb_code, "../Client/PDB_Datas/ENT/%s" % filename)
 
-output_file = open("../PDB_Datas/TSV/%s.tsv" % pdb_code,"w")
+output_file = open("../Client/PDB_Datas/TSV/%s.tsv" % pdb_code,"w")
 for model in structure :
     for chain in model :
         print("Chain %s" % str(chain.id))
@@ -71,4 +73,10 @@ for model in structure :
                            residue.id[1], degrees(phi), degrees(psi),
                            ramachandran_type(residue, poly[res_index+1])))
 output_file.close()
+
+with open("../Client/PDB_Datas/TSV/%s.tsv" % pdb_code,r) as file:
+  reader = csv.DictReader(file, delimiter="\t")
+  data = list(reader)
+return json.dumps(data)
+    
 print("Done")
