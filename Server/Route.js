@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  *
- * Please visit : https://github.com/axel-polin/Papyrus_UI
+ * Please visit : https://github.com/lynerlok/RamchandranServer
  *
  */
 
@@ -32,17 +32,12 @@
 var express = require("express");
 var fs = require("fs");
 var bodyParser = require('body-parser');
-var uuid = require('uuid/v4');
 var path = require('path');
-var del = require('del');
 var {PythonShell} = require('python-shell');
 
 //var helmet = require('helmet');
 
 var router = express.Router(); // Use Router to set route for the server;
-
-var exec = require('child_process').exec;
-function puts(error, stdout, stderr) { console.log("[INFO] Execute convert on image : Out: " + stdout + '\n' + "Error: " + stderr) }
 
 //var parser = require('Scripts/parse.js');
 
@@ -103,7 +98,7 @@ module.exports = (function() { // Module creation for the main file of the serve
 		res.setHeader('Expires', 0);
 		res.setHeader('Surrogate-Control', 'no-store');
    // res.setHeader('Feature-Policy', "camera: 'none'; payment: 'none'; microphone: 'none'");// Bad compatibility
-		res.setHeader('Content-Security-Policy', "default-src 'self' data:; font-src 'self' use.fontawesome.com ; style-src 'self' use.fontawesome.com www.w3schools.com 'unsafe-inline'; script-src 'self' code.angularjs.org ajax.googleapis.com 'unsafe-inline'");
+		res.setHeader('Content-Security-Policy', "default-src 'self' data:; font-src 'self' use.fontawesome.com ; style-src 'self' use.fontawesome.com www.w3schools.com 'unsafe-inline'; script-src 'self' code.angularjs.org ajax.googleapis.com d3js.org 'unsafe-inline'");
 
     res.setHeader('Public-Key-Pins', 'pin-sha256="qvFAlNcPepF8XPAe+Hj/1sOMoIzPKqAlhl3hsFEH7tg="; \
 								pin-sha256="LM/+L4/KK/O1MlrufMk7UXkgrsF9U/4IBwHR7VIIfLc="; \
