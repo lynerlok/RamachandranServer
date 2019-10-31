@@ -1,3 +1,31 @@
+#
+# ramachandran_biopython.py
+#
+# Copyright (C) 2019 Axel Polin
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+# MA 02110-1301, USA.
+#
+# Please visit : https://github.com/lynerlok/RamchandranServer
+#
+#
+#
+# For question contact : univ_apolin@protonmail.com or directly on github with issue !
+#
+# This file is a modification of the script here :
+#
 # Please see accompanying webpage:
 # 
 # http://www.warwick.ac.uk/go/peter_cock/python/ramachandran/calculate/
@@ -6,13 +34,6 @@
 #
 # http://www.biopython.org
 #
-
-import math
-import sys
-import Bio.PDB
-import requests
-import csv
-import json
 
 def degrees(rad_angle) :
     """Converts any angle in radians to degrees.
@@ -49,34 +70,75 @@ def ramachandran_type(residue, next_residue) :
     else :
         return "General"    
 
-pdb_code = sys.argv[1]
+def getStructure(workingDir, filename, pdbCode) :
+  
+  RamList = []
+  
+  try :
+    structure = Bio.PDB.PDBParser().get_structure(pdbCode, workingDir+"ENT/%s" % filename)
+  except : 
+    return [0]
 
-Bio.PDB.PDBList().retrieve_pdb_file(pdb_code, obsolete=False, pdir="../../Client/PDB_Datas/ENT/", file_format="pdb", overwrite=False)
+  for model in structure :
+      for chain in model :
+        #  print("Chain %s" % str(chain.id))
+          polypeptides = Bio.PDB.CaPPBuilder().build_peptides(chain)
+          for poly_index, poly in enumerate(polypeptides) :
+              phi_psi = poly.get_phi_psi_list()
+              for res_index, residue in enumerate(poly) :
+                  phi, psi = phi_psi[res_index]
+                  if phi and psi :
+                      #Don't write output when missing an angle
+                      RamList.append("\"%s_Chain%s_%s%i\" : [%f, %f, \"%s\"]" \
+                      % (pdbCode, str(chain.id), residue.resname,residue.id[1], degrees(phi), degrees(psi),ramachandran_type(residue, poly[res_index+1]))
+                      )
 
-filename = 'pdb'+pdb_code+'.ent'
+  return RamList
 
-structure = Bio.PDB.PDBParser().get_structure(pdb_code, "../../Client/PDB_Datas/ENT/%s" % filename)
 
-output_file = open("../../Client/PDB_Datas/%s.json" % pdb_code,"w")
-
-output_file.write("{")
-
-for model in structure :
-    for chain in model :
-        print("Chain %s" % str(chain.id))
-        polypeptides = Bio.PDB.CaPPBuilder().build_peptides(chain)
-        for poly_index, poly in enumerate(polypeptides) :
-            phi_psi = poly.get_phi_psi_list()
-            for res_index, residue in enumerate(poly) :
-                phi, psi = phi_psi[res_index]
-                if phi and psi :
-                    #Don't write output when missing an angle
-                    output_file.write("\"%s_Chain%s_%s%i\" : [%f, %f, \"%s\"] ," \
-                    % (pdb_code, str(chain.id), residue.resname,residue.id[1], degrees(phi), degrees(psi),ramachandran_type(residue, poly[res_index+1]))
-                    )
-
-output_file.write("}")
-
-output_file.close()
+def main(args):
+  
+  WD = "../Client/PDB_Datas/"
+  pdbCode = args[1]
+  RamList = []
+  
+  try : 
+    Bio.PDB.PDBList().retrieve_pdb_file(pdbCode, obsolete=False, pdir=WD+"ENT/", file_format="pdb", overwrite=False)
+  except :
+    return 0
     
-print("Done")
+  filename = 'pdb'+pdbCode+'.ent'
+
+  RamList = getStructure(WD,filename,pdbCode);
+  
+  if (RamList[0] == 0 ) :
+    return 0
+  
+  LenRamList = len(RamList)-1;
+
+  output_file = open(WD+"%s.json" % pdbCode,"w")
+
+  output_file.write("{")
+
+  for i in range(LenRamList+1) :
+    if ( i < LenRamList ) :
+      output_file.write("%s ," % RamList[i]);
+    else :
+      output_file.write("%s" % RamList[i]);
+
+  output_file.write("}")
+
+  output_file.close()
+      
+  print("Done")
+
+  return 0
+
+if __name__ == '__main__':
+  import math
+  import sys
+  import Bio.PDB
+  import requests
+  import csv
+  import json
+  sys.exit(main(sys.argv))

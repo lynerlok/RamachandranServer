@@ -29,13 +29,19 @@
           <input name="code" id="code" class="formFieldPDB w3-input" type="text" placeholder="PDB code" type="text" ng-model="pdb.code" required />
           <br/>
   
-          <input type="submit" ng-disabled="form.$invalid"  class="w3-button w3-section w3-teal w3-ripple" ng-click="sendPDB(pdb)" value="Send PDB" />
+          <input type="submit" ng-disabled="form.$invalid"  class="w3-button w3-section w3-teal w3-ripple" ng-click="sendPDB(pdb)" value="Create rama plot" />
           
         </form>
       </div>
       <!-- END Calculate ramachandran -->
       
-      <div id="display" style="width:600px;height:250px;"></div>
-
+      <p id="waitTxt" class="w3-center w3-padding-16"></p>
+      
+      <div class="w3-row">
+        <div class="w3-col s2 m2 l2"><br/></div>
+        <div id="displayPlot" class="w3-col s8 m8 l8"></div>
+        <div class="w3-col s2 m2 l2"><br/></div>
+      </div>
+      
    </body>
 </html>

@@ -1,7 +1,7 @@
 /*
  * ServerExpress.js
  *
- * Copyright (C) 2019 Elisabeth Gueux, Salome Mialon, Quentin Piet, Axel Polin
+ * Copyright (C) 2019 Axel Polin
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,6 @@
  * ** FS to manipulate filesystem.
  * ** HTTPS to create HTTPS connection with client.
  * ** body-parser to parse body on POST request.
- * ** crypto and uuid to generate number.
  */
  
 var express = require("express");

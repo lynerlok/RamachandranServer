@@ -36,10 +36,128 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
  * @return
  * This function allow to create a new working directory on the server with the CSRF protection;
  */
+ 
+    const MakePlot = (dataJson,code) => {
+      
+      var layout = {
+        xaxis: {
+          range: [ -180, 180]
+        },
+        yaxis: {
+          range: [-180, 180]
+        },
+        title:'Ramachandran plot for '+code
+      };
+      
+      var treshold = 180*0.1;
+      
+      var xHeliceA = [];
+      var yHeliceA = [];
+      var tagHeliceA = [];
+      
+      var xHeliceGauche = [];
+      var yHeliceGauche = [];
+      var tagHeliceGauche = [];
+      
+      var xFeuilletB = [];
+      var yFeuilletB = [];
+      var tagFeuilletB = [];
+      
+      var xUnknown = [];
+      var yUnknown = [];
+      var tagUnknown = [];
+      
+      for (var key in dataJson){
+        
+        var x = dataJson[key][0];
+        var y = dataJson[key][1];
+        
+        if (x<=0 && y>0 ){
+          if (y<(180-treshold)){
+            xHeliceA.push(x);
+            yHeliceA.push(y);
+            tagHeliceA.push(key);
+          }
+          else {
+            xUnknown.push(x);
+            yUnknown.push(y);
+            tagUnknown.push(key);
+          }
+        }
+        
+        if (x<=0 && y<=0){
+          if (y>(-180+treshold)){
+            xFeuilletB.push(x);
+            yFeuilletB.push(y);
+            tagFeuilletB.push(key);
+          }
+          else {
+            xUnknown.push(x);
+            yUnknown.push(y);
+            tagUnknown.push(key);
+          }
+          
+        }
+        
+        if (x>0 && y>0 ){
+          xHeliceGauche.push(x);
+          yHeliceGauche.push(y);
+          tagHeliceGauche.push(key);
+        }
+        
+      }
+      
+      var heliceA = {
+        x: xHeliceA,
+        y: yHeliceA,
+        mode: 'markers',
+        type: 'scatter',
+        name: 'Hélice alpha',
+        text: tagHeliceA,
+        marker: { size: 5 }
+      };
+      
+      var feuilletB = {
+        x: xFeuilletB,
+        y: yFeuilletB,
+        mode: 'markers',
+        type: 'scatter',
+        name: 'Feuillet Beta',
+        text: tagFeuilletB,
+        marker: { size: 5 }
+      };
+      
+      var heliceGauche = {
+        x: xHeliceGauche,
+        y: yHeliceGauche,
+        mode: 'markers',
+        type: 'scatter',
+        name: 'Hélice gauche',
+        text: tagHeliceGauche,
+        marker: { size: 5 }
+      };
+      
+      var unknown = {
+        x: xUnknown,
+        y: yUnknown,
+        mode: 'markers',
+        type: 'scatter',
+        name: 'Unknown',
+        text: tagUnknown,
+        marker: { size: 5 }
+      };
+
+      var data = [ heliceA, feuilletB, heliceGauche, unknown ];
+
+      
+      Plotly.newPlot('displayPlot', data, layout);
+    }
     
     var dataToSend = JSON.stringify({ "code" : pdb.code});
     // ^- Create a JSON string with concatenation of img txt and the Area.images array (see Area);
-
+    
+    document.getElementById("waitTxt").innerHTML = "Sending request to the server please wait...";
+    
     $http({ // Post all datas to server;
       method : "POST", // Method accepted by the server is POST;
       url : '/pdb', // The URL where the server accept this type of POST;
@@ -48,21 +166,20 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
       contentType: 'application/json; charset=utf-8' // Content-Type for the server and the communication;
     }).then(function(response) {
       
-        $http({ // Post all datas to server;
-          method : "POST", // Method accepted by the server is POST;
-          url : "/RamJSON", // The URL where the server accept this type of POST;
-          data : dataToSend, // Put the data to send here;
-          dataType: 'json', // The type of data is JSON;
-          contentType: 'application/json; charset=utf-8' // Content-Type for the server and the communication;
-        }).then(function(response) {
-          console.log(response.data);
-         // alert("Image removed from server"); // If the image sucessfuly uploaded alert user;
-        }, function(response) {
-          alert("Error while getting json file!!"); // If the upload fail alert user;
-        });
-        
+      var text = document.getElementById("waitTxt").innerHTML ;
+      document.getElementById("waitTxt").innerHTML = text + "<br/>" + "Server respond 200 OK ! " + "<br/>" + "Creating rama plot...";
+      
+      MakePlot(response.data,pdb.code);
+      
+      text = document.getElementById("waitTxt").innerHTML;
+      document.getElementById("waitTxt").innerHTML  = text + "<br/>" + "Done !"
+      
+      setTimeout(function () {document.getElementById("waitTxt").innerHTML = ''}, 3500)
+      
     }, function(response) {
-      alert("Error while sending pdb id to server !!"); // If the upload fail alert user;
+      var text = document.getElementById("waitTxt").innerHTML ;
+      document.getElementById("waitTxt").innerHTML = text + "<br/>" + "Server error !" + "<br/>" + "Creating rama plot aborted";
+      setTimeout(function () {document.getElementById("waitTxt").innerHTML = ''}, 3500)
     });
 
   };

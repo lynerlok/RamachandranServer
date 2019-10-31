@@ -1,7 +1,7 @@
 /*
  * Route.js
  *
- * Copyright (C) 2019 Elisabeth Gueux, Salome Mialon, Quentin Piet, Axel Polin
+ * Copyright (C) 2019 Axel Polin
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
  */
 
 /* This file contain all route used by the server in ServerExpress.js;
- * Please refer to the manual at https://github.com/axel-polin/Papyrus_UI/wiki for further informations;
  * For question contact : univ_apolin@protonmail.com or directly on github with issue !
  */
 
@@ -53,12 +52,13 @@ var router = express.Router(); // Use Router to set route for the server;
 var pythonPathNode = __dirname + '/Scripts/venv/ramachandran/bin/python3.5';
 var RAM_ScriptPath = __dirname + '/Scripts/ramachandran_biopython.py';
 var JSONPath = __dirname + '/../Client/PDB_Datas/';
+
 // Server path;
 //    Main path;
 
 var mainPath = '/';
 var indexPath = '/index.html';
-var ramJsonPath = '/RamJSON';
+
 //    Script path to run script on the server (not system path);
 
 var pdbPath = '/pdb';
@@ -98,7 +98,10 @@ module.exports = (function() { // Module creation for the main file of the serve
 		res.setHeader('Expires', 0);
 		res.setHeader('Surrogate-Control', 'no-store');
    // res.setHeader('Feature-Policy', "camera: 'none'; payment: 'none'; microphone: 'none'");// Bad compatibility
-		res.setHeader('Content-Security-Policy', "default-src 'self' data:; font-src 'self' use.fontawesome.com ; style-src 'self' use.fontawesome.com www.w3schools.com 'unsafe-inline'; script-src 'self' code.angularjs.org ajax.googleapis.com cdn.plot.ly 'unsafe-inline'");
+		res.setHeader('Content-Security-Policy', "default-src 'self' data: blob:; font-src 'self' use.fontawesome.com ; \
+      style-src 'self' use.fontawesome.com www.w3schools.com 'unsafe-inline'; \
+      script-src 'self' code.angularjs.org ajax.googleapis.com 'unsafe-inline' 'unsafe-eval';"
+    );
 
     res.setHeader('Public-Key-Pins', 'pin-sha256="qvFAlNcPepF8XPAe+Hj/1sOMoIzPKqAlhl3hsFEH7tg="; \
 								pin-sha256="LM/+L4/KK/O1MlrufMk7UXkgrsF9U/4IBwHR7VIIfLc="; \
@@ -132,23 +135,28 @@ module.exports = (function() { // Module creation for the main file of the serve
         args: [`${pdb_code}`]
       };
 
-      PythonShell.run(RAM_ScriptPath, options, function (err, results) { // Run the script;
-        if (err) throw 'An error occurs when execute BioPython :' + err;
-
-        res.sendStatus(200);
+      PythonShell.run(RAM_ScriptPath, options, function (err) { // Run the script;
+        
+        if (err) {
+          console.log('An error occurs when execute BioPython :' + err);
+          res.sendStatus(500);
+          return 0;
+        }
+        
+        try {
+          var jsonFile = fs.readFileSync(JSONPath+pdb_code+".json", 'utf8');
+          var data = JSON.parse(jsonFile);
+        } catch (e) {
+          console.log("An error occurs when reading json file :" + e);
+          res.sendStatus(500);
+          return 0
+        }
+        
+        res.send(data);
+        
        });
        
 	});
-  
-  router.post(ramJsonPath,function(req,res){ // Route : when POST treshold (body contains img ref) make some action and send 200 OK;
-
-      var pdb_code = req.body.code;
-      
-      var jsonFile = fs.readFileSync(JSONPath+pdb_code+".json", 'utf8');
-      var data = JSON.parse(jsonFile);
-      
-      res.send(data);
-	}); 
   
   return router;
 })();
