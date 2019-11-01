@@ -125,7 +125,7 @@ module.exports = (function() { // Module creation for the main file of the serve
 
   router.post(pdbPath,function(req,res){ // Route : when POST treshold (body contains img ref) make some action and send 200 OK;
 
-      var pdb_code = req.body.code;
+      var pdb_code = req.body.code.toLowerCase();
       
       // Set options for python-shell
       var options = {
