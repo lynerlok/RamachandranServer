@@ -100,11 +100,23 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
         }
         
         if (x>0 && y>0 ){
-          xHeliceGauche.push(x);
-          yHeliceGauche.push(y);
-          tagHeliceGauche.push(key);
+          if (y<(180-treshold)){
+            xHeliceGauche.push(x);
+            yHeliceGauche.push(y);
+            tagHeliceGauche.push(key);
+          }
+          else {
+            xUnknown.push(x);
+            yUnknown.push(y);
+            tagUnknown.push(key);
+          }
         }
         
+        if (x>0 && y<=0){
+          xUnknown.push(x);
+          yUnknown.push(y);
+          tagUnknown.push(key);
+        }
       }
       
       var heliceA = {
