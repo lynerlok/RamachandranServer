@@ -49,7 +49,7 @@ var router = express.Router(); // Use Router to set route for the server;
 
 //    Scripts path;
 
-var pythonPathNode = __dirname + '/Scripts/ramachandran/bin/python3.5';
+var pythonPathNode = __dirname + '/Scripts/ramachandran/bin/python3';
 var RAM_ScriptPath = __dirname + '/Scripts/ramachandran_biopython.py';
 var JSONPath = __dirname + '/../Client/PDB_Datas/';
 
