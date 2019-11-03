@@ -139,6 +139,4 @@ if __name__ == '__main__':
   import sys
   import Bio.PDB
   import requests
-  import csv
-  import json
   sys.exit(main(sys.argv))

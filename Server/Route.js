@@ -49,7 +49,7 @@ var router = express.Router(); // Use Router to set route for the server;
 
 //    Scripts path;
 
-var pythonPathNode = __dirname + '/Scripts/venv/ramachandran/bin/python3.5';
+var pythonPathNode = __dirname + '/Scripts/ramachandran/bin/python3.5';
 var RAM_ScriptPath = __dirname + '/Scripts/ramachandran_biopython.py';
 var JSONPath = __dirname + '/../Client/PDB_Datas/';
 
@@ -123,7 +123,7 @@ module.exports = (function() { // Module creation for the main file of the serve
      res.redirect(indexPath);
   });
 
-  router.post(pdbPath,function(req,res){ // Route : when POST treshold (body contains img ref) make some action and send 200 OK;
+  router.post(pdbPath,function(req,res){
 
       var pdb_code = req.body.code.toLowerCase();
       
