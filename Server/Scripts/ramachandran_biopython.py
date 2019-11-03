@@ -75,7 +75,7 @@ def getStructure(workingDir, filename, pdbCode) :
   RamList = []
   
   try :
-    structure = Bio.PDB.PDBParser().get_structure(pdbCode, workingDir+"ENT/%s" % filename)
+    structure = Bio.PDB.MMCIFParser().get_structure(pdbCode, workingDir+"CIF/%s" % filename)
   except : 
     return [0]
 
@@ -103,11 +103,11 @@ def main(args):
   RamList = []
   
   try : 
-    Bio.PDB.PDBList().retrieve_pdb_file(pdbCode, obsolete=False, pdir=WD+"ENT/", file_format="pdb", overwrite=False)
+    Bio.PDB.PDBList().retrieve_pdb_file(pdbCode, obsolete=False, pdir=WD+"CIF/", file_format="mmCif", overwrite=False)
   except :
     return 0
     
-  filename = 'pdb'+pdbCode+'.ent'
+  filename = pdbCode+'.cif'
 
   RamList = getStructure(WD,filename,pdbCode);
   
