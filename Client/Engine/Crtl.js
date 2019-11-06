@@ -159,7 +159,7 @@ protVisu.controller('Form', ['$scope','$rootScope','$http', function($scope,$roo
 
       if(type == "rama") { MakePlot(response.data,pdb.code);}
       
-      if(type == "dssp"){console.log("OK !")}
+      if(type == "dssp"){console.log("OK !")} // Mise en page JSON reçu response.data
       
       text = document.getElementById("waitTxt").innerHTML;
       document.getElementById("waitTxt").innerHTML  = text + "<br/>" + "Done !"

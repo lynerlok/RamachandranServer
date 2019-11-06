@@ -167,7 +167,8 @@ module.exports = (function() { // Module creation for the main file of the serve
       // requête HTTP ==> download pdb (stockage local) ==> return nom fichier
       // nom de fichier ==> Child process... ==> Run binaire dssp (voir recuperation return)
       // DSSP.... CODE HERE ==> dssp traitement
-      
+      // var data = Json...
+      // res.send(data);
       res.sendStatus(200);
        
 	});
