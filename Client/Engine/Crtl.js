@@ -1,7 +1,7 @@
 /*
  * Crtl.js
  *
- * Copyright (C) 2019 Axel Polin
+ * Copyright (C) 2019 Axel Polin, Eden Darnige, Yann Prévot.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,9 +36,9 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
  * @return
  * This function allow to create a new working directory on the server with the CSRF protection;
  */
- 
+
     const MakePlot = (dataJson,code) => {
-      
+
       var layout = {
         xaxis: {
           range: [ -180, 180]
@@ -48,77 +48,53 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
         },
         title:'Ramachandran plot for '+code
       };
-      
+
       var treshold = 180*0.1;
-      
+
       var xHeliceA = [];
       var yHeliceA = [];
       var tagHeliceA = [];
-      
+
       var xHeliceGauche = [];
       var yHeliceGauche = [];
       var tagHeliceGauche = [];
-      
+
       var xFeuilletB = [];
       var yFeuilletB = [];
       var tagFeuilletB = [];
-      
+
       var xUnknown = [];
       var yUnknown = [];
       var tagUnknown = [];
-      
+
+      const pushList = (listX,listY,listTag,x,y,key) => {
+        listX.push(x);
+        listY.push(y);
+        listTag.push(key);
+      }
+
       for (var key in dataJson){
-        
+
         var x = dataJson[key][0];
         var y = dataJson[key][1];
-        
-        if (x<=0 && y>0 ){
-          if (y<(180-treshold)){
-            xHeliceA.push(x);
-            yHeliceA.push(y);
-            tagHeliceA.push(key);
-          }
-          else {
-            xUnknown.push(x);
-            yUnknown.push(y);
-            tagUnknown.push(key);
-          }
+
+        if (x<=0 && y>0){
+          y<(180-treshold) ? pushList(xHeliceA,yHeliceA,tagHeliceA,x,y,key) : pushList(xUnknown,yUnknown,tagUnknown,x,y,key)
         }
-        
+
         if (x<=0 && y<=0){
-          if (y>(-180+treshold)){
-            xFeuilletB.push(x);
-            yFeuilletB.push(y);
-            tagFeuilletB.push(key);
-          }
-          else {
-            xUnknown.push(x);
-            yUnknown.push(y);
-            tagUnknown.push(key);
-          }
-          
+          y>(-180+treshold) ? pushList(xFeuilletB,yFeuilletB,tagFeuilletB,x,y,key) : pushList(xUnknown,yUnknown,tagUnknown,x,y,key)
         }
-        
-        if (x>0 && y>0 ){
-          if (y<(180-treshold)){
-            xHeliceGauche.push(x);
-            yHeliceGauche.push(y);
-            tagHeliceGauche.push(key);
-          }
-          else {
-            xUnknown.push(x);
-            yUnknown.push(y);
-            tagUnknown.push(key);
-          }
+
+        if (x>0 && y>0){
+          y<(180-treshold) ? pushList(xHeliceGauche,yHeliceGauche,tagHeliceGauche,x,y,key) : pushList(xUnknown,yUnknown,tagUnknown,x,y,key)
         }
-        
+
         if (x>0 && y<=0){
-          xUnknown.push(x);
-          yUnknown.push(y);
-          tagUnknown.push(key);
+          pushList(xUnknown,yUnknown,tagUnknown,x,y,key)
         }
       }
-      
+
       var heliceA = {
         x: xHeliceA,
         y: yHeliceA,
@@ -128,7 +104,7 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
         text: tagHeliceA,
         marker: { size: 5 }
       };
-      
+
       var feuilletB = {
         x: xFeuilletB,
         y: yFeuilletB,
@@ -138,7 +114,7 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
         text: tagFeuilletB,
         marker: { size: 5 }
       };
-      
+
       var heliceGauche = {
         x: xHeliceGauche,
         y: yHeliceGauche,
@@ -148,7 +124,7 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
         text: tagHeliceGauche,
         marker: { size: 5 }
       };
-      
+
       var unknown = {
         x: xUnknown,
         y: yUnknown,
@@ -161,15 +137,15 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
 
       var data = [ heliceA, feuilletB, heliceGauche, unknown ];
 
-      
+
       Plotly.newPlot('displayPlot', data, layout);
     }
-    
+
     var dataToSend = JSON.stringify({ "code" : pdb.code});
     // ^- Create a JSON string with concatenation of img txt and the Area.images array (see Area);
-    
+
     document.getElementById("waitTxt").innerHTML = "Sending request to the server please wait...";
-    
+
     $http({ // Post all datas to server;
       method : "POST", // Method accepted by the server is POST;
       url : '/pdb', // The URL where the server accept this type of POST;
@@ -177,17 +153,17 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
       dataType: 'json', // The type of data is JSON;
       contentType: 'application/json; charset=utf-8' // Content-Type for the server and the communication;
     }).then(function(response) {
-      
+
       var text = document.getElementById("waitTxt").innerHTML ;
       document.getElementById("waitTxt").innerHTML = text + "<br/>" + "Server respond 200 OK ! " + "<br/>" + "Creating rama plot...";
-      
+
       MakePlot(response.data,pdb.code);
-      
+
       text = document.getElementById("waitTxt").innerHTML;
       document.getElementById("waitTxt").innerHTML  = text + "<br/>" + "Done !"
-      
+
       setTimeout(function () {document.getElementById("waitTxt").innerHTML = ''}, 3500)
-      
+
     }, function(response) {
       var text = document.getElementById("waitTxt").innerHTML ;
       document.getElementById("waitTxt").innerHTML = text + "<br/>" + "Server error !" + "<br/>" + "Creating rama plot aborted";
