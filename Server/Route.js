@@ -62,6 +62,7 @@ var indexPath = '/index.html';
 //    Script path to run script on the server (not system path);
 
 var pdbPath = '/pdb';
+var dsspPath = '/dssp';
 
 module.exports = (function() { // Module creation for the main file of the server;
 /*
@@ -155,6 +156,14 @@ module.exports = (function() { // Module creation for the main file of the serve
         res.send(data);
         
        });
+       
+	});
+  
+  router.post(dsspPath,function(req,res){
+
+      var pdb_code = req.body.code.toLowerCase();
+      
+      res.sendStatus(200);
        
 	});
   

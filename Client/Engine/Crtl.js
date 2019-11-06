@@ -26,9 +26,9 @@
  * More informations at : https://docs.angularjs.org/guide/controller;
  */
 
-protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$rootScope,$http){
+protVisu.controller('Form', ['$scope','$rootScope','$http', function($scope,$rootScope,$http){
 
-  $scope.sendPDB = function(pdb){
+  $scope.sendPDB = function(pdb,type){
 /*
  *
  * name: getCsrfPDB
@@ -148,7 +148,7 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
 
     $http({ // Post all datas to server;
       method : "POST", // Method accepted by the server is POST;
-      url : '/pdb', // The URL where the server accept this type of POST;
+      url : '/'+type, // The URL where the server accept this type of POST;
       data : dataToSend, // Put the data to send here;
       dataType: 'json', // The type of data is JSON;
       contentType: 'application/json; charset=utf-8' // Content-Type for the server and the communication;
@@ -157,8 +157,10 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
       var text = document.getElementById("waitTxt").innerHTML ;
       document.getElementById("waitTxt").innerHTML = text + "<br/>" + "Server respond 200 OK ! " + "<br/>" + "Creating rama plot...";
 
-      MakePlot(response.data,pdb.code);
-
+      if(type == "rama") { MakePlot(response.data,pdb.code);}
+      
+      if(type == "dssp"){console.log("OK !")}
+      
       text = document.getElementById("waitTxt").innerHTML;
       document.getElementById("waitTxt").innerHTML  = text + "<br/>" + "Done !"
 
@@ -173,7 +175,3 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
   };
 
 }]);
-
-
-
-
