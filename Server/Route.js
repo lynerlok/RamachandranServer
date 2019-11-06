@@ -61,7 +61,7 @@ var indexPath = '/index.html';
 
 //    Script path to run script on the server (not system path);
 
-var pdbPath = '/pdb';
+var ramaPath = '/rama';
 var dsspPath = '/dssp';
 
 module.exports = (function() { // Module creation for the main file of the server;
@@ -124,7 +124,7 @@ module.exports = (function() { // Module creation for the main file of the serve
      res.redirect(indexPath);
   });
 
-  router.post(pdbPath,function(req,res){
+  router.post(ramaPath,function(req,res){
 
       var pdb_code = req.body.code.toLowerCase();
       
@@ -162,6 +162,11 @@ module.exports = (function() { // Module creation for the main file of the serve
   router.post(dsspPath,function(req,res){
 
       var pdb_code = req.body.code.toLowerCase();
+      var filename = "...";
+      
+      // requête HTTP ==> download pdb (stockage local) ==> return nom fichier
+      // nom de fichier ==> Child process... ==> Run binaire dssp (voir recuperation return)
+      // DSSP.... CODE HERE ==> dssp traitement
       
       res.sendStatus(200);
        
