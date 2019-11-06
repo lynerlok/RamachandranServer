@@ -78,11 +78,11 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
         var x = dataJson[key][0];
         var y = dataJson[key][1];
 
-        if (x<=0 && y>0){
+        if (x<=0 && y<=0){
           y<(180-treshold) ? pushList(xHeliceA,yHeliceA,tagHeliceA,x,y,key) : pushList(xUnknown,yUnknown,tagUnknown,x,y,key)
         }
 
-        if (x<=0 && y<=0){
+        if (x<=0 && y>0){
           y>(-180+treshold) ? pushList(xFeuilletB,yFeuilletB,tagFeuilletB,x,y,key) : pushList(xUnknown,yUnknown,tagUnknown,x,y,key)
         }
 
