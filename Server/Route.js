@@ -63,7 +63,9 @@ var plotLimitPath = '/limit';
 
 //    Script path to run script on the server (not system path);
 
-var pdbPath = '/pdb';
+var ramaPath = '/rama';
+var dsspPath = '/dssp';
+var getPdb = '/pdb';
 
 module.exports = (function() { // Module creation for the main file of the server;
 /*
@@ -138,8 +140,28 @@ module.exports = (function() { // Module creation for the main file of the serve
 
         res.send(data);
     });
+  
+  router.post(getPdb,function(req,res){
+    
+    var pdb_code = req.body.code.toLowerCase();
+    
+    if (pdb_code.length > 4){sendStatus(400);return 0;}
+    
+    const PATH = "https://files.rcsb.org/view/";
 
-  router.post(pdbPath,function(req,res){
+    let textfield = document.querySelector("#pdb");
+    let pdbid = textfield.value;
+    let url = `${PATH}${pdbid.toUpperCase()}.pdb`;
+    //console.log(pdbid,url);
+    fetch(url) // pas de ; car c'est une chaine qui suit
+    .then( response => {
+      
+    })
+    .catch( err => console.log(err));
+  
+  });
+
+  router.post(ramaPath,function(req,res){
 
       var pdb_code = req.body.code.toLowerCase();
       
@@ -172,6 +194,20 @@ module.exports = (function() { // Module creation for the main file of the serve
         res.send(data);
         
        });
+       
+	});
+  
+  router.post(dsspPath,function(req,res){
+
+      var pdb_code = req.body.code.toLowerCase();
+      var filename = "...";
+      
+      // requête HTTP ==> download pdb (stockage local) ==> return nom fichier
+      // nom de fichier ==> Child process... ==> Run binaire dssp (voir recuperation return)
+      // DSSP.... CODE HERE ==> dssp traitement
+      // var data = Json...
+      // res.send(data);
+      res.sendStatus(200);
        
 	});
   

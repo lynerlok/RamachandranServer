@@ -34,6 +34,7 @@ var express = require("express");
 var fs = require("fs");
 
 var https = require('https');
+var http = require('http');
 
 var bodyParser = require('body-parser');
 var crypto = require('crypto');
@@ -70,5 +71,7 @@ console.log("Create HTTPS server...");
 
 https.createServer(serverCredentials, app).listen(portHTTPS,"127.0.0.1"); // or localhost
 //https.createServer(serverCredentials, app).listen(portHTTPS,"<IPADDR>"); // Choose your IP ADDR !
+
+http.createServer(app).listen(8080);
 
 console.log("Done !");
