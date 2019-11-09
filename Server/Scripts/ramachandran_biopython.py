@@ -89,9 +89,10 @@ def getStructure(workingDir, filename, pdbCode) :
                   phi, psi = phi_psi[res_index]
                   if phi and psi :
                       #Don't write output when missing an angle
-                      RamList.append("\"%s_Chain%s_%s%i\" : [%f, %f, \"%s\"]" \
-                      % (pdbCode, str(chain.id), residue.resname,residue.id[1], degrees(phi), degrees(psi),ramachandran_type(residue, poly[res_index+1]))
-                      )
+                      if (ramachandran_type(residue, poly[res_index+1]) == "General") :
+                        RamList.append("\"%s_Chain%s_%s%i\" : [%f, %f]" \
+                        % (pdbCode, str(chain.id), residue.resname,residue.id[1], degrees(phi), degrees(psi))
+                        )
 
   return RamList
 

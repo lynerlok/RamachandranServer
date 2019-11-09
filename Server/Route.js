@@ -63,9 +63,7 @@ var plotLimitPath = '/limit';
 
 //    Script path to run script on the server (not system path);
 
-var ramaPath = '/rama';
-var dsspPath = '/dssp';
-var getPdb = '/pdb';
+var pdbPath = '/pdb';
 
 module.exports = (function() { // Module creation for the main file of the server;
 /*
@@ -140,30 +138,15 @@ module.exports = (function() { // Module creation for the main file of the serve
 
         res.send(data);
     });
-  
-  router.post(getPdb,function(req,res){
-    
-    var pdb_code = req.body.code.toLowerCase();
-    
-    if (pdb_code.length > 4){sendStatus(400);return 0;}
-    
-    const PATH = "https://files.rcsb.org/view/";
 
-    let textfield = document.querySelector("#pdb");
-    let pdbid = textfield.value;
-    let url = `${PATH}${pdbid.toUpperCase()}.pdb`;
-    //console.log(pdbid,url);
-    fetch(url) // pas de ; car c'est une chaine qui suit
-    .then( response => {
-      
-    })
-    .catch( err => console.log(err));
-  
-  });
-
-  router.post(ramaPath,function(req,res){
+  router.post(pdbPath,function(req,res){
 
       var pdb_code = req.body.code.toLowerCase();
+      
+      /* PUT HERE DSSP CODE !!! OUTPUT FORMAT : {chaine : [angle phi, angle psi]} 
+       * et format de chaine : pdbCode, id de chain, nom de residue, id de residue  
+       * exemple {"1zni_ChainA_ILE2" : [-61.876720, -31.848242]} 
+      */
       
       // Set options for python-shell
       var options = {
@@ -194,20 +177,6 @@ module.exports = (function() { // Module creation for the main file of the serve
         res.send(data);
         
        });
-       
-	});
-  
-  router.post(dsspPath,function(req,res){
-
-      var pdb_code = req.body.code.toLowerCase();
-      var filename = "...";
-      
-      // requête HTTP ==> download pdb (stockage local) ==> return nom fichier
-      // nom de fichier ==> Child process... ==> Run binaire dssp (voir recuperation return)
-      // DSSP.... CODE HERE ==> dssp traitement
-      // var data = Json...
-      // res.send(data);
-      res.sendStatus(200);
        
 	});
   

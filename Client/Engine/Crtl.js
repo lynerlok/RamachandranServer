@@ -29,7 +29,7 @@
 
 protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$rootScope,$http){
 
-  $scope.sendPDB = function(pdb){
+  $scope.sendPDB = function(pdb,type){
 /*
  *
  * name: getCsrfPDB
