@@ -53,11 +53,13 @@ var pythonPathNode = __dirname + '/Scripts/ramachandran/bin/python3';
 var RAM_ScriptPath = __dirname + '/Scripts/ramachandran_biopython.py';
 var JSONPath = __dirname + '/../Client/PDB_Datas/';
 var plotPath = __dirname + '/Scripts/Plot/';
+
 // Server path;
 //    Main path;
 
 var mainPath = '/';
 var indexPath = '/index.html';
+var plotLimitPath = '/limit';
 
 //    Script path to run script on the server (not system path);
 
@@ -122,6 +124,20 @@ module.exports = (function() { // Module creation for the main file of the serve
   router.get(mainPath, async function(req, res){ // Route : when GET '/' redirect to index.html;
      res.redirect(indexPath);
   });
+  
+  router.get(plotLimitPath, function(req,res) {
+    
+      try {
+          var data = fs.readFileSync(plotPath+"plotArea.json", 'utf8');
+          
+        } catch (e) {
+          console.log("An error occurs when reading json file :" + e);
+          res.sendStatus(500);
+          return 0
+        }
+
+        res.send(data);
+    });
 
   router.post(pdbPath,function(req,res){
 
@@ -144,13 +160,8 @@ module.exports = (function() { // Module creation for the main file of the serve
         }
         
         try {
-          var jsonFile = fs.readFileSync(JSONPath+pdb_code+".json", 'utf8');
-          var data = JSON.parse(jsonFile);
-          
-          jsonFile = fs.readFileSync(plotPath+"plotArea.json", 'utf8');
-          var plotArea = JSON.parse(jsonFile);
-          
-          data.plot = plotArea;
+          var data = fs.readFileSync(JSONPath+pdb_code+".json", 'utf8');
+        //  var data = JSON.parse(jsonFile);
           
         } catch (e) {
           console.log("An error occurs when reading json file :" + e);

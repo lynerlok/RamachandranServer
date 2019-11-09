@@ -39,12 +39,12 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
  */
 
 
-    const MakePlot = (dataJson,code) => {
+    const MakePlot = (dataJson,limits,code) => {
       
-      var xLimitsLight = dataJson.plot.xLight;
-      var yLimitsLight = dataJson.plot.yLight;
-      var xLimitsDark = dataJson.plot.xDark;
-      var yLimitsDark = dataJson.plot.yDark;
+      var xLimitsLight = limits.xLight;
+      var yLimitsLight = limits.yLight;
+      var xLimitsDark = limits.xDark;
+      var yLimitsDark = limits.yDark;
       
       var layout = {
         xaxis: {
@@ -119,8 +119,34 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
     var dataToSend = JSON.stringify({ "code" : pdb.code});
     // ^- Create a JSON string with concatenation of img txt and the Area.images array (see Area);
 
-    document.getElementById("waitTxt").innerHTML = "Sending request to the server please wait...";
+    if (sessionStorage.getItem('plotLimit') === null) {
 
+      document.getElementById("waitTxt").innerHTML = "No plot limits found. Sending plot limits request to the server please wait..."; 
+      
+      $http({ // Post all datas to server;
+      method : "GET", // Method accepted by the server is GET;
+      url : '/limit' // The URL where the server accept this type of GET;
+      }).then(function(response) {
+
+        var text = document.getElementById("waitTxt").innerHTML ;
+        document.getElementById("waitTxt").innerHTML = text + "<br/>" + "Server respond 200 OK ! " + "<br/>" + "Continue...";
+      
+        sessionStorage.setItem('plotLimit', JSON.stringify(response.data));
+        
+        text = document.getElementById("waitTxt").innerHTML;
+        document.getElementById("waitTxt").innerHTML  = text + "<br/>" + "Plot limits recevied ! "
+
+      }, function(response) {
+        var text = document.getElementById("waitTxt").innerHTML ;
+        document.getElementById("waitTxt").innerHTML = text + "<br/>" + "Server error !" + "<br/>" + "Plot limit undefined, abort";
+        setTimeout(function () {document.getElementById("waitTxt").innerHTML = ''}, 3500)
+      });
+      
+    }
+    
+    var text = document.getElementById("waitTxt").innerHTML ;
+    document.getElementById("waitTxt").innerHTML = text + "<br/>" + "Sending protein request to the server please wait...";
+    
     $http({ // Post all datas to server;
       method : "POST", // Method accepted by the server is POST;
       url : '/pdb', // The URL where the server accept this type of POST;
@@ -131,9 +157,11 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
 
       var text = document.getElementById("waitTxt").innerHTML ;
       document.getElementById("waitTxt").innerHTML = text + "<br/>" + "Server respond 200 OK ! " + "<br/>" + "Creating rama plot...";
-
-      MakePlot(response.data,pdb.code);
-
+      
+      var limits=JSON.parse(sessionStorage['plotLimit']);
+      
+      MakePlot(response.data,limits,pdb.code);
+      
       text = document.getElementById("waitTxt").innerHTML;
       document.getElementById("waitTxt").innerHTML  = text + "<br/>" + "Done !"
 
@@ -144,7 +172,7 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
       document.getElementById("waitTxt").innerHTML = text + "<br/>" + "Server error !" + "<br/>" + "Creating rama plot aborted";
       setTimeout(function () {document.getElementById("waitTxt").innerHTML = ''}, 3500)
     });
-
+    
   };
 
 }]);
