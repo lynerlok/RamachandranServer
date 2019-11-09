@@ -52,7 +52,7 @@ var router = express.Router(); // Use Router to set route for the server;
 var pythonPathNode = __dirname + '/Scripts/ramachandran/bin/python3';
 var RAM_ScriptPath = __dirname + '/Scripts/ramachandran_biopython.py';
 var JSONPath = __dirname + '/../Client/PDB_Datas/';
-
+var plotPath = __dirname + '/Scripts/Plot/';
 // Server path;
 //    Main path;
 
@@ -146,6 +146,12 @@ module.exports = (function() { // Module creation for the main file of the serve
         try {
           var jsonFile = fs.readFileSync(JSONPath+pdb_code+".json", 'utf8');
           var data = JSON.parse(jsonFile);
+          
+          jsonFile = fs.readFileSync(plotPath+"plotArea.json", 'utf8');
+          var plotArea = JSON.parse(jsonFile);
+          
+          data.plot = plotArea;
+          
         } catch (e) {
           console.log("An error occurs when reading json file :" + e);
           res.sendStatus(500);
