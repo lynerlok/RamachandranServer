@@ -87,8 +87,6 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
         marker: { color: '#000000', size: 5 }
       }];
       
-      Plotly.newPlot('displayPlot', plot, layout);
-
       var fillGenreal = [
         {//lighter color with val 0.0005 - 0.02
           x: xLimitsLight,
@@ -112,8 +110,10 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
           },
           name: 'z > 0.02'
         }];
-      
-      Plotly.plot('displayPlot', fillGenreal, layout);
+        
+        
+      Plotly.newPlot('displayPlot', fillGenreal, layout);
+      Plotly.plot('displayPlot', plot, layout);
     }
 
     var dataToSend = JSON.stringify({ "code" : pdb.code});
