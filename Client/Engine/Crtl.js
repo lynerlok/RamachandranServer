@@ -25,6 +25,7 @@
 /* This file contain angularJs controllers. It is a specification of AngularJS.
  * More informations at : https://docs.angularjs.org/guide/controller;
  */
+ 
 
 protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$rootScope,$http){
 
@@ -37,8 +38,14 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
  * This function allow to create a new working directory on the server with the CSRF protection;
  */
 
-    const MakePlot = (dataJson,code) => {
 
+    const MakePlot = (dataJson,limits,code) => {
+      
+      var xLimitsLight = limits.xLight;
+      var yLimitsLight = limits.yLight;
+      var xLimitsDark = limits.xDark;
+      var yLimitsDark = limits.yDark;
+      
       var layout = {
         xaxis: {
           range: [ -180, 180]
@@ -49,23 +56,9 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
         title:'Ramachandran plot for '+code
       };
 
-      var treshold = 180*0.1;
-
-      var xHeliceA = [];
-      var yHeliceA = [];
-      var tagHeliceA = [];
-
-      var xHeliceGauche = [];
-      var yHeliceGauche = [];
-      var tagHeliceGauche = [];
-
-      var xFeuilletB = [];
-      var yFeuilletB = [];
-      var tagFeuilletB = [];
-
-      var xUnknown = [];
-      var yUnknown = [];
-      var tagUnknown = [];
+      var xPlot = [];
+      var yPlot = [];
+      var tagPlot = [];
 
       const pushList = (listX,listY,listTag,x,y,key) => {
         listX.push(x);
@@ -74,78 +67,86 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
       }
 
       for (var key in dataJson){
+        
+        if (key !== "plot") {
+          var x = dataJson[key][0];
+          var y = dataJson[key][1];
 
-        var x = dataJson[key][0];
-        var y = dataJson[key][1];
-
-        if (x<=0 && y<=0){
-          y<(180-treshold) ? pushList(xHeliceA,yHeliceA,tagHeliceA,x,y,key) : pushList(xUnknown,yUnknown,tagUnknown,x,y,key)
-        }
-
-        if (x<=0 && y>0){
-          y>(-180+treshold) ? pushList(xFeuilletB,yFeuilletB,tagFeuilletB,x,y,key) : pushList(xUnknown,yUnknown,tagUnknown,x,y,key)
-        }
-
-        if (x>0 && y>0){
-          y<(180-treshold) ? pushList(xHeliceGauche,yHeliceGauche,tagHeliceGauche,x,y,key) : pushList(xUnknown,yUnknown,tagUnknown,x,y,key)
-        }
-
-        if (x>0 && y<=0){
-          pushList(xUnknown,yUnknown,tagUnknown,x,y,key)
+          pushList(xPlot,yPlot,tagPlot,x,y,key);
         }
       }
+      
 
-      var heliceA = {
-        x: xHeliceA,
-        y: yHeliceA,
+      var plot = [{
+        x: xPlot,
+        y: yPlot,
         mode: 'markers',
         type: 'scatter',
-        name: 'Hélice alpha',
-        text: tagHeliceA,
-        marker: { size: 5 }
-      };
-
-      var feuilletB = {
-        x: xFeuilletB,
-        y: yFeuilletB,
-        mode: 'markers',
-        type: 'scatter',
-        name: 'Feuillet Beta',
-        text: tagFeuilletB,
-        marker: { size: 5 }
-      };
-
-      var heliceGauche = {
-        x: xHeliceGauche,
-        y: yHeliceGauche,
-        mode: 'markers',
-        type: 'scatter',
-        name: 'Hélice gauche',
-        text: tagHeliceGauche,
-        marker: { size: 5 }
-      };
-
-      var unknown = {
-        x: xUnknown,
-        y: yUnknown,
-        mode: 'markers',
-        type: 'scatter',
-        name: 'Unknown',
-        text: tagUnknown,
-        marker: { size: 5 }
-      };
-
-      var data = [ heliceA, feuilletB, heliceGauche, unknown ];
-
-
-      Plotly.newPlot('displayPlot', data, layout);
+        name: 'Plot for '+code,
+        text: tagPlot,
+        marker: { color: '#000000', size: 5 }
+      }];
+      
+      var fillGenreal = [
+        {//lighter color with val 0.0005 - 0.02
+          x: xLimitsLight,
+          y: yLimitsLight,
+          hoveron: 'points+fills',
+          mode: 'markers',
+          opacity: 0.3,
+          marker:{
+            color: '#B3E8FF'
+          },
+          name: '0.0005 < z < 0.02'
+        },
+        {//Darker color with val > 0.02
+          x: xLimitsDark,
+          y: yLimitsDark,
+          hoveron: 'Fills',
+          mode: "markers",
+          opacity: 0.3,
+          marker:{
+            color:'#7FD9FF'
+          },
+          name: 'z > 0.02'
+        }];
+        
+        
+      Plotly.newPlot('displayPlot', fillGenreal, layout);
+      Plotly.plot('displayPlot', plot, layout);
     }
 
     var dataToSend = JSON.stringify({ "code" : pdb.code});
     // ^- Create a JSON string with concatenation of img txt and the Area.images array (see Area);
 
-    document.getElementById("waitTxt").innerHTML = "Sending request to the server please wait...";
+    if (sessionStorage.getItem('plotLimit') === null) {
 
+      document.getElementById("waitTxt").innerHTML = "No plot limits found. Sending plot limits request to the server please wait..."; 
+      
+      $http({ // Post all datas to server;
+      method : "GET", // Method accepted by the server is GET;
+      url : '/limit' // The URL where the server accept this type of GET;
+      }).then(function(response) {
+
+        var text = document.getElementById("waitTxt").innerHTML ;
+        document.getElementById("waitTxt").innerHTML = text + "<br/>" + "Server respond 200 OK ! " + "<br/>" + "Continue...";
+      
+        sessionStorage.setItem('plotLimit', JSON.stringify(response.data));
+        
+        text = document.getElementById("waitTxt").innerHTML;
+        document.getElementById("waitTxt").innerHTML  = text + "<br/>" + "Plot limits recevied ! "
+
+      }, function(response) {
+        var text = document.getElementById("waitTxt").innerHTML ;
+        document.getElementById("waitTxt").innerHTML = text + "<br/>" + "Server error !" + "<br/>" + "Plot limit undefined, abort";
+        setTimeout(function () {document.getElementById("waitTxt").innerHTML = ''}, 3500)
+      });
+      
+    }
+    
+    var text = document.getElementById("waitTxt").innerHTML ;
+    document.getElementById("waitTxt").innerHTML = text + "<br/>" + "Sending protein request to the server please wait...";
+    
     $http({ // Post all datas to server;
       method : "POST", // Method accepted by the server is POST;
       url : '/pdb', // The URL where the server accept this type of POST;
@@ -156,9 +157,11 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
 
       var text = document.getElementById("waitTxt").innerHTML ;
       document.getElementById("waitTxt").innerHTML = text + "<br/>" + "Server respond 200 OK ! " + "<br/>" + "Creating rama plot...";
-
-      MakePlot(response.data,pdb.code);
-
+      
+      var limits=JSON.parse(sessionStorage['plotLimit']);
+      
+      MakePlot(response.data,limits,pdb.code);
+      
       text = document.getElementById("waitTxt").innerHTML;
       document.getElementById("waitTxt").innerHTML  = text + "<br/>" + "Done !"
 
@@ -169,11 +172,7 @@ protVisu.controller('pdbForm', ['$scope','$rootScope','$http', function($scope,$
       document.getElementById("waitTxt").innerHTML = text + "<br/>" + "Server error !" + "<br/>" + "Creating rama plot aborted";
       setTimeout(function () {document.getElementById("waitTxt").innerHTML = ''}, 3500)
     });
-
+    
   };
 
 }]);
-
-
-
-
