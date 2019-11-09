@@ -63,6 +63,7 @@ var indexPath = '/index.html';
 
 var ramaPath = '/rama';
 var dsspPath = '/dssp';
+var getPdb = '/pdb';
 
 module.exports = (function() { // Module creation for the main file of the server;
 /*
@@ -122,6 +123,26 @@ module.exports = (function() { // Module creation for the main file of the serve
 
   router.get(mainPath, async function(req, res){ // Route : when GET '/' redirect to index.html;
      res.redirect(indexPath);
+  });
+  
+  router.post(getPdb,function(req,res){
+    
+    var pdb_code = req.body.code.toLowerCase();
+    
+    if (pdb_code.length > 4){sendStatus(400);return 0;}
+    
+    const PATH = "https://files.rcsb.org/view/";
+
+    let textfield = document.querySelector("#pdb");
+    let pdbid = textfield.value;
+    let url = `${PATH}${pdbid.toUpperCase()}.pdb`;
+    //console.log(pdbid,url);
+    fetch(url) // pas de ; car c'est une chaine qui suit
+    .then( response => {
+      
+    })
+    .catch( err => console.log(err));
+  
   });
 
   router.post(ramaPath,function(req,res){
